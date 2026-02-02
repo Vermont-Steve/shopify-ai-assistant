@@ -1,22 +1,3 @@
-import { Agent, AgentInputItem, Runner, withTrace } from "@openai/agents";
-
-const myAgent = new Agent({
-  name: "My agent",
-  instructions: `Create a fun website description for each product...
-  (your full instructions here)
-  `,
-  model: "gpt-5.2",
-  modelSettings: {
-    reasoning: { effort: "low", summary: "auto" },
-    store: true
-  }
-});
-
-type WorkflowInput = {
-  input_as_text: string;
-  image_base64: string | null;
-};
-
 export const runWorkflow = async (workflow: WorkflowInput) => {
   return await withTrace("Website Descriptions", async () => {
     const conversationHistory: AgentInputItem[] = [];
@@ -59,10 +40,6 @@ export const runWorkflow = async (workflow: WorkflowInput) => {
     }
 
     return {
-      output_text: result.finalOutput
-    };
-  });
-};
       output_text: result.finalOutput
     };
   });
