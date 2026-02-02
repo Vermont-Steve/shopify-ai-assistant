@@ -12,16 +12,38 @@ const myAgent = new Agent({
   }
 });
 
-type WorkflowInput = { input_as_text: string };
+type WorkflowInput = {
+  input_as_text: string;
+  image_base64: string | null;
+};
 
 export const runWorkflow = async (workflow: WorkflowInput) => {
   return await withTrace("Website Descriptions", async () => {
-    const conversationHistory: AgentInputItem[] = [
-      {
+    const conversationHistory: AgentInputItem[] = [];
+
+    if (workflow.input_as_text) {
+      conversationHistory.push({
         role: "user",
-        content: [{ type: "input_text", text: workflow.input_as_text }]
-      }
-    ];
+        content: [
+          {
+            type: "input_text",
+            text: workflow.input_as_text
+          }
+        ]
+      });
+    }
+
+    if (workflow.image_base64) {
+      conversationHistory.push({
+        role: "user",
+        content: [
+          {
+            type: "input_image",
+            image_base64: workflow.image_base64
+          }
+        ]
+      });
+    }
 
     const runner = new Runner({
       traceMetadata: {
@@ -37,6 +59,10 @@ export const runWorkflow = async (workflow: WorkflowInput) => {
     }
 
     return {
+      output_text: result.finalOutput
+    };
+  });
+};
       output_text: result.finalOutput
     };
   });
